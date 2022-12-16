@@ -58,21 +58,23 @@ class PostAdmin(admin.ModelAdmin):
         (
             'Дополнительное',
             {
-                'fields': ('date_created', 'author', 'slug')
+                'fields': ('date_created', 'author', 'slug', 'image')
             }
         )
     )
 
+
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ("email", "name")
+    list_display = ('email', 'name')
 
-class CantactManager(ContactAdmin):
-    readonly_fields = ("email", "name", "message", "date_created")
+
+class ContactManager(ContactAdmin):
+    readonly_fields = ('email', 'name', 'message', 'date_created')
 
 
 # admin.site.register(Category, CategoryAdmin)
 # admin.site.register(Post, PostAdmin)
 manager.register(Category, CategoryAdmin)
 manager.register(Post, PostAdmin)
-manager.register(Contact, ContactAdmin)
+manager.register(Contact, ContactManager)

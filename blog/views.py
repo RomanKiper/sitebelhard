@@ -16,11 +16,18 @@ def post_detail(request: HttpRequest, post_slug: str):
     post = get_object_or_404(Post, slug=post_slug)
     return render(request, 'blog/post.html', {'post': post})
 
+
 def contact(request: HttpRequest):
-    if request.method == "POST":
-        form = ContactForm(request)
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
     form = ContactForm()
-    return render(request, "blog/contact.html", {"contact_form": form})
+    return render(request, 'blog/contact.html', {'contact_form': form})
+
+
+def about(request: HttpRequest):
+    return render(request, 'blog/about.html')
 
 
 def error404(request, exception):
