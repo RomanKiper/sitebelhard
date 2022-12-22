@@ -1,15 +1,18 @@
 <form method="post">
     {% csrf_token %}
+    <label>
+        <input name="form_type" value="contact_form" hidden>
+    </label>
     <div class="form-floating">
-        {{ contact_form.name }}
+        {{ form.name }}
         <label for="name">Name</label>
     </div>
     <div class="form-floating">
-        {{ contact_form.email }}
+        {{ form.email }}
         <label for="email">Email address</label>
     </div>
     <div class="form-floating">
-        {{ contact_form.message }}
+        {{ form.message }}
         <label for="message">Message</label>
     </div>
     <br />

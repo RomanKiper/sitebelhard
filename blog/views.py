@@ -1,9 +1,10 @@
 from django.http import HttpRequest
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
 
+from .forms import ContactForm, MyForm
 from .models import Post, Contact
-from .forms import ContactForm
 
 
 class BaseMixin:
@@ -26,8 +27,20 @@ class PostListView(BaseMixin, ListView):
         context = super().get_context_data()
         context['heading'] = 'MIXIN HEADING'
         context['subheading'] = 'mixin subheading'
+        context['form'] = ContactForm()
+        context['my_form'] = MyForm()
         context.update(self.context)
         return context
+
+    def post(self, request: HttpRequest):
+        match request.POST.get('form_type'):
+            case 'contact_form':
+                form = ContactForm(request.POST)
+                if form.is_valid():
+                    form.save()
+            case 'email_form':
+                print(request.POST.get('email'))
+        return self.get(request=request)
 
 
 class PostDetailView(BaseMixin, DetailView):
@@ -41,51 +54,41 @@ class PostDetailView(BaseMixin, DetailView):
         context.update(self.context)
         return context
 
+
 class AboutTemplateView(BaseMixin, TemplateView):
-    template_name  = 'blog/about.html'
+    template_name = 'blog/about.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context.update(self.context)
-        context['heading'] = 'ABOUT'
-        context['coordinate'] = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10221.793301433216!2d27.54570734394003!3d53.906860922347065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcf94b327141f%3A0xd74e660de1f79fe9!2z0J3QtdC80LjQs9Cw!5e1!3m2!1sru!2sby!4v1671128718358!5m2!1sru!2sby"
-        context['about'] = """
-        ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT ABOUT 
-        ABOUT 
-        """
+        context['heading'] = 'about us'
+        context['coordinate'] = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10221.793301433216!2d27.54570734394003!3d53.906860922347065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcf94b327141f%3A0xd74e660de1f79fe9!2z0J3QtdC80LjQs9Cw!5e1!3m2!1sru!2sby!4v1671128718358!5m2!1sru!2sby'
+        context['about'] = '''
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+ABOUT ABOUT ABOUT ABOUT        
+'''
         return context
 
+
 class ContactCreateView(BaseMixin, CreateView):
+    template_name = 'blog/contact.html'
     model = Contact
     form_class = ContactForm
-    success_url = "/"
+    success_url = reverse_lazy('blog_posts')
 
     def get_context_data(self, **kwargs):
-        context
-
-
-# @require_GET
-# def blog_list(request: HttpRequest):
-#     posts_list = Post.objects.all()
-#     return render(request, 'blog/index.html', {'posts': posts_list})
-
-
-# def post_detail(request: HttpRequest, post_slug: str):
-#     post = get_object_or_404(Post, slug=post_slug)
-#     return render(request, 'blog/post.html', {'post': post})
-
-
-def contact(request: HttpRequest):
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            form.save()
-    form = ContactForm()
-    return render(request, 'blog/contact.html', {'contact_form': form})
-
-
-def about(request: HttpRequest):
-    return render(request, 'blog/about.html')
+        context = super().get_context_data()
+        context.update(self.context)
+        context['heading'] = 'CONTACT'
+        return context
 
 
 def error404(request, exception):
