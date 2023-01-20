@@ -33,13 +33,12 @@ class PostListView(BaseMixin, ListView):
         return context
 
     def post(self, request: HttpRequest):
-        match request.POST.get('form_type'):
-            case 'contact_form':
+        if request.POST.get('form_type') == 'contact_form':
                 form = ContactForm(request.POST)
                 if form.is_valid():
                     form.save()
-            case 'email_form':
-                print(request.POST.get('email'))
+        elif request.POST.get('form_tipe') == 'email_form':
+            print(request.POST.get('email'))
         return self.get(request=request)
 
 
